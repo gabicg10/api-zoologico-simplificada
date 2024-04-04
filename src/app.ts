@@ -3,6 +3,7 @@ import cors from 'cors';
 import { Ave } from './model/Ave';
 import { Habitat } from './model/Habitat';
 import { Atracao } from './model/Atracao';
+import { DatabaseModel } from './model/DatabaseModel';
 
 const server = express();
 const port = 3000;
@@ -13,6 +14,11 @@ server.use(cors());
 // Rota padrão para testes (NÃO USAR EM AMBIENTE PRODUÇÃO)
 server.get('/', (req, res) => {
     res.send('Hello World!');
+});
+
+server.post('/login', (req, res) => {
+    const { username, password } = req.body;
+    console.log(`Informações: ${username} - ${password}`);
 });
 
 /**
@@ -113,6 +119,12 @@ server.post('/novo/atracao', async (req, res) => {
     }
 });
 
-server.listen(port, () => {
-    console.info(`Servidor executando no endereço http://localhost:${port}/`);
+new DatabaseModel().testeConexao().then((resbd) => {
+    if(resbd) {
+        server.listen(port, () => {
+            console.info(`Servidor executando no endereço http://localhost:${port}/`);
+        })
+    } else {
+        console.log(`Não foi possível conectar ao banco de dados`);
+    }
 })
