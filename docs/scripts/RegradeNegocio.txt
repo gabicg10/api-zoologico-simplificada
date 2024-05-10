@@ -1,0 +1,11 @@
+RN1
+Ao cadastrar um animal, o usuário deverá informar no cadastro o habitat onde este animal estará inserido.
+
+RN2
+Ao cadastrar uma atração, o usuário deverá informar no cadastro o habitat onde está atração será apresentada.
+
+RN3
+Ao listar os animais cadastrados no banco de dados, a função deve retornar também o habitat onde o animal está inserido.
+
+RN4
+Ao atualizar uma atração, o usuário deverá informar o habitat onde aquela atração ocorrerá, podendo ser o habitat já cadastrado ou um novo habitat.

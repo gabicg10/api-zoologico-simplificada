@@ -1,0 +1,24 @@
+GET http://localhost:3000/atracoes
+
+###
+
+POST http://localhost:3000/novo/atracao
+Content-Type: application/json
+
+{
+	"nomeAtracao": "teste",
+	"idHabitat": 3
+}
+
+###
+
+DELETE http://localhost:3000/remover/atracao?idAtracao=0
+
+###
+
+PUT http://localhost:3000/atualizar/atracao?idAtracao=0
+Content-Type: application/json
+
+{
+	"nomeAtracao": "teste atualizado",
+}

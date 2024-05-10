@@ -59,7 +59,7 @@ export class Ave extends Animal {
      * 
      * @returns Lista com todos as aves cadastradas no banco de dados
      */
-    static async listarAves() {
+    static async listarAves(): Promise<Array<Ave> | string> {
         // Cria uma lista (array) vazia do tipo Ave
         const listaDeAves: Array<Ave> = [];
 
@@ -91,7 +91,7 @@ export class Ave extends Animal {
      * @param idHabitat Opcional - Id do habitat que será associado à ave
      * @returns **true** caso sucesso, **false** caso erro
      */
-    static async cadastrarAve(ave: Ave, idHabitat: number): Promise<any> {
+    static async cadastrarAve(ave: Ave, idHabitat: number): Promise<Boolean> {
         // Cria uma variável do tipo booleano para guardar o status do resultado da query
         let insertResult = false;
 
@@ -112,7 +112,7 @@ export class Ave extends Animal {
                     if (!await Habitat.inserirAnimalHabitat(idAnimal, idHabitat)) {
                         console.log("Erro ao cadastrar animal no habitat");
                     };
-                    
+
                     // Se o número de linhas for diferente de zero, a operação deu certo e o valor VERDADEIRO é atribuido na variável
                     insertResult = true;
                 });
@@ -124,6 +124,128 @@ export class Ave extends Animal {
 
             // Caso a inserção no banco der algum erro, é restorno o valor FALSO para quem chamou a função
             return insertResult;
+        }
+    }
+
+    static async removerAve(idAnimal: number): Promise<Boolean> {
+        // Variável para controlar o resultado da função
+        let queryResult = false;
+
+        try {
+            // Query para deletar o animal da tabela animal_habitat
+            const queryDeleteAnimalHabitat = `DELETE FROM animal_habitat WHERE idanimal=${idAnimal}`;
+
+            // Executando a query
+            await database.query(queryDeleteAnimalHabitat);
+
+            // Query para remover o animal da tabela animal
+            const queryDeleteAnimal = `DELETE FROM animal WHERE idanimal=${idAnimal}`;
+
+            // Executa a query
+            await database.query(queryDeleteAnimal)
+                .then((result) => {
+                    // Se o resultado for diferente de zero, a query foi executada com sucesso
+                    if (result.rowCount != 0) {
+                        queryResult = true;
+                    }
+                })
+
+            // Retorna o resultado da função
+            return queryResult;
+        } catch (error) {
+            // Exibe o erro no console
+            console.log(`Erro na consulta: ${error}`);
+            // Retorna a variável queryResult com valor FALSE
+            return queryResult;
+        }
+    }
+
+
+    // /**
+    //  * Remove um animal do banco de dados
+    //  * @param idAnimal ID do animal a ser removido
+    //  * @returns **true** caso deletado, **false** caso erro na função
+    //  */
+    // static async removerAve(idAnimal: number): Promise<Boolean> {
+    //     console.log('aqui cheguei');
+
+    //     // Variável para controlar o resultado da função
+    //     let queryResult = false;
+
+    //     try {
+    //         // Query para deletar o animal da tabela animal_habitat
+    //         const queryDeleteAnimalHabitat = `DELETE FROM animal_habitat WHERE idanimal=${idAnimal}`;
+
+    //         // Executando a query
+    //         await database.query(queryDeleteAnimalHabitat)
+    //         // Testar o resultado da query
+    //         .then(async (result) => {
+    //             // Se o resultado for diferente de zero, a query foi executada com sucesso
+    //             if(result.rowCount != 0) {
+    //                 // Se a query for executado com sucesso, agora irá remover o animal tabela animal
+
+    //                 // Query para remover o animal da tabela animal
+    //                 const queryDeleteAnimal = `DELETE FROM animal WHERE idanimal=${idAnimal}`;
+    //                 // Executa a query
+    //                 await database.query(queryDeleteAnimal)
+    //                 // Testar o resultado da query
+    //                 .then((result) => {
+    //                     // Se o resultado for diferente de zero, a query foi executada com sucesso
+    //                     if(result.rowCount != 0) {
+    //                         // atribui o valor VERDADEIRO a queryResult
+    //                         queryResult = true;
+    //                     }
+    //                 })
+    //             }
+    //         })
+
+    //         // Retorna o resultado da função
+    //         return queryResult;
+    //     // Caso ocorra algum erro
+    //     } catch (error) {
+    //         // Exibe o erro no console
+    //         console.log(`Erro na consulta: ${error}`);
+    //         // Retorna a variável queryResult com valor FALSE
+    //         return queryResult;
+    //     }
+    // }
+
+    /**
+     * Atualiza as informações de uma ave no banco de dados
+     * @param ave Objeto ave contendo as informações
+     * @param idAve id da ave a ser alterada
+     * @returns **true** caso a atualização seja feita, **false** caso ocorra algum problema
+     */
+    static async atualizarAve(ave: Ave, idAve: number): Promise<Boolean> {
+        // Variável para controlar o resultado da função
+        let queryResult = false;
+
+        try {
+            // Query para alterar o animal da tabela animal
+            const queryUpdateAve = `UPDATE animal SET
+                                        nomeAnimal='${ave.getNomeAnimal().toUpperCase()}',
+                                        idadeAnimal=${ave.getIdadeAnimal()},
+                                        generoAnimal='${ave.getGeneroAnimal().toUpperCase()}',
+                                        envergadura=${ave.getEnvergadura()}
+                                    WHERE idAnimal=${idAve}`;
+
+            // executa a query
+            await database.query(queryUpdateAve)
+                // Testar o resultado da query
+                .then((result) => {
+                    // Se o resultado for diferente de zero, a query foi executada com sucesso
+                    if (result.rowCount !== 0) {
+                        // atribui o valor VERDADEIRO a queryResult                 
+                        queryResult = true;
+                    }
+                })
+            // Retorna o resultado da função
+            return queryResult;
+        } catch (error) {
+            // Exibe o erro no console
+            console.log(`Erro na consulta: ${error}`);
+            // Retorna a variável queryResult com valor FALSE
+            return queryResult;
         }
     }
 }

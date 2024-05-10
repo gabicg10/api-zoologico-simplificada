@@ -119,6 +119,123 @@ server.post('/novo/atracao', async (req, res) => {
     }
 });
 
+// Rota para remover um animal
+server.delete('/remover/animal', async (req, res) => {   
+    // recuperando o id do animal a ser removido
+    const idAnimal = parseInt(req.query.idAnimal as string);
+    
+    // chama a função para remover o animal e armazena o resultado na variável
+    const resultado = await Ave.removerAve(idAnimal);
+    
+    if(resultado) {
+        // se o resultado for **true**, retorna mensagem de sucesso
+        return res.status(200).json('Animal foi removido com sucesso');
+    } else {
+        // se o resultado for **false**, retorna mensagem de erro
+        return res.status(401).json('Erro ao remover animal');
+    }
+});
+
+// Rota para atualizar as informações de um animal
+server.put('/atualizar/animal', async (req, res) => {
+    // Desestruturando objeto recebido pelo front-end
+    const { nome, idade, genero, envergadura } = req.body;
+    // recuperando o id do animal a ser atualizado
+    const idAnimal = parseInt(req.query.idAnimal as string);
+
+    // Instanciando objeto Ave
+    const novaAve = new Ave(nome, idade, genero, envergadura);
+
+    // Chama o método para persistir a ave no banco de dados e armazena o resultado na variável
+    const result = await Ave.atualizarAve(novaAve, idAnimal);
+
+    if (result) {
+        // se o resultado for **true**, retorna mensagem de sucesso
+        return res.status(200).json('Ave atualizada com sucesso');
+    } else {
+        // se o resultado for **false**, retorna mensagem de erro
+        return res.status(400).json('Não foi possível atualizar a ave no banco de dados');
+    }
+});
+
+// Rota para remover uma atração
+server.delete('/remover/atracao', async (req, res) => {
+    // recuperando o id da atração a ser removida
+    const idAtracao = parseInt(req.query.idAtracao as string);
+
+    // chama a função para remover a atração e armazena o resultado na variável
+    const resultado = await Atracao.removerAtracao(idAtracao);
+
+    if(resultado) {
+        // se o resultado for **true**, retorna mensagem de sucesso
+        return res.status(200).json('Atração foi removida com sucesso');
+    } else {
+        // se o resultado for **false**, retorna mensagem de erro
+        return res.status(401).json('Erro ao remover atração');
+    }
+})
+
+// Rota para atualizar as informações de uma atração
+server.put('/atualizar/atracao', async (req, res) => {
+    // Desestruturando objeto recebido pelo front-end
+    const { nomeAtracao } = req.body;
+    // recuperando o id da atração a ser atualizada
+    const idAtracao = parseInt(req.query.idAtracao as string);
+
+    // Instanciando objeto Atração
+    const novaAtracao = new Atracao(nomeAtracao);
+
+    // Chama o método para persistir a ave no banco de dados e armazena o resultado na variável
+    const resultado = await Atracao.atualizarAtracao(novaAtracao, idAtracao);
+
+    if(resultado) {
+        // se o resultado for **true**, retorna mensagem de sucesso
+        return res.status(200).json('Atração foi alterada com sucesso');
+    } else {
+        // se o resultado for **false**, retorna mensagem de erro
+        return res.status(401).json('Erro ao alterar atração');
+    }
+})
+
+// Rota para remover um habitat
+server.delete('/remover/habitat', async (req, res) => {
+    // recuperando o id do habitat a ser removido
+    const idHabitat = parseInt(req.query.idHabitat as string);
+
+    // chama a função para remover o animal e armazena o resultado na variável
+    const resultado = await Habitat.removerHabitat(idHabitat);
+
+    if(resultado) {
+        // se o resultado for **true**, retorna mensagem de sucesso
+        return res.status(200).json('Habitat foi removida com sucesso');
+    } else {
+        // se o resultado for **false**, retorna mensagem de erro
+        return res.status(401).json('Erro ao remover habitat');
+    }
+})
+
+// Rota para atualizar as informações de um habitat
+server.put('/atualizar/habitat', async (req, res) => {
+    // Desestruturando objeto recebido pelo front-end
+    const { nomeHabitat } = req.body;
+    // recuperando o id do animal a ser atualizado
+    const idHabitat = parseInt(req.query.idHabitat as string);
+
+     // Instanciando objeto Habitat
+    const novoHabitat = new Habitat(nomeHabitat);
+
+    // Chama o método para persistir a ave no banco de dados e armazena o resultado na variável
+    const resultado = await Habitat.atualizarHabitat(novoHabitat, idHabitat);
+
+    if(resultado) {
+        // se o resultado for **true**, retorna mensagem de sucesso
+        return res.status(200).json('Habitat foi atualizado com sucesso');
+    } else {
+        // se o resultado for **false**, retorna mensagem de erro
+        return res.status(401).json('Erro ao atualizar habitat');
+    }
+})
+
 new DatabaseModel().testeConexao().then((resbd) => {
     if(resbd) {
         server.listen(port, () => {

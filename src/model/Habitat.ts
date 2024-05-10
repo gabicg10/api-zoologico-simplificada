@@ -205,4 +205,94 @@ export class Habitat {
             return insertResult;
         }
     }
+
+    /**
+     * Remove um habitat do banco de dados
+     * @param idHabitat id do habitat
+     * @returns **true** caso deletado, **false** caso erro na função
+     */
+    static async removerHabitat(idHabitat: number): Promise<Boolean> {
+        // Variável para controlar o resultado da função
+        let queryResult = false;
+
+        try {
+            // Query para deletar o habitat da tabela atracao
+            const queryDeleteHabitatAtracao = `DELETE FROM atracao WHERE idHabitat=${idHabitat};`;
+            // Executando a query
+            await database.query(queryDeleteHabitatAtracao)
+            // Testar o resultado da query
+            .then(async (result) => {
+                // Se o resultado for diferente de zero, a query foi executada com sucesso
+                if (result.rowCount != 0) {
+                    // Query para deletar o habitat da tabela animal_habitat
+                    const queryDeleteHabitatAnimalHabitat = `DELETE FROM animal_habitat WHERE idHabitat=${idHabitat};`;
+                    // Executando a query
+                    await database.query(queryDeleteHabitatAnimalHabitat)
+                    // Testar o resultado da query
+                    .then(async (result) => {
+                        // Se o resultado for diferente de zero, a query foi executada com sucesso
+                        if (result.rowCount != 0) {
+                            // Query para deletar o habitat da tabela habitat
+                            const queryDeleteHabitat = `DELETE FROM habitat WHERE idHabitat=${idHabitat};`;
+                            // Executando a query
+                            await database.query(queryDeleteHabitat)
+                            // Testar o resultado da query
+                            .then(async (result) => {
+                                // Se o resultado for diferente de zero, a query foi executada com sucesso
+                                if (result.rowCount != 0) {
+                                    // atribui o valor VERDADEIRO a queryResult
+                                    queryResult = true;
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+            // Retorna o resultado da função
+            return queryResult;
+        // Caso ocorra algum erro
+        } catch (error) {
+            // Exibe o erro no console
+            console.log(`Erro: ${error}`);
+            // Retorna a variável queryResult com valor FALSE
+            return queryResult;
+        }
+    }
+
+    /**
+     * Atualiza as informações de um habitat no banco de dados
+     * 
+     * @param habitat Objeto habitat contendo as informações
+     * @param idHabitat id do habitat a ser alterado
+     * @returns **true** caso a atualização seja feita, **false** caso ocorra algum problema
+     */
+    static async atualizarHabitat(habitat: Habitat, idHabitat: number): Promise<Boolean> {
+        // Variável para controlar o resultado da função
+        let queryResult = false;
+
+        try {
+            // Query para alterar o animal da tabela animal
+            const queryUpdateHabitat = `UPDATE habitat SET
+                                        nomehabitat='${habitat.getNomeHabitat().toUpperCase()}'
+                                        WHERE idhabitat=${idHabitat};`;
+
+            // Executa a query
+            await database.query(queryUpdateHabitat)
+            // Testar o resultado da query
+            .then((result) => {
+                // Se o resultado for diferente de zero, a query foi executada com sucesso
+                if(result.rowCount !== 0) {
+                    // atribui o valor VERDADEIRO a queryResult 
+                    queryResult = true;
+                }
+            })
+            // Retorna o resultado da função
+            return queryResult;
+        } catch (error) {
+            // Exibe o erro no console
+            console.log(`Erro: ${error}`);
+            // Retorna a variável queryResult com valor FALSE
+            return queryResult;
+        }
+    }
 }
